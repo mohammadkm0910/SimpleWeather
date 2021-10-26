@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:orientation="vertical"
+    android:gravity="bottom"
+    android:background="@drawable/bg_nav_header_drawer"
+    android:theme="@style/ThemeOverlay.MaterialComponents.Dark">
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/textaApplication"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="4dp"
+        app:srcCompat="@drawable/app_launcher"
+        android:contentDescription="@null"/>
+    <TextView
+        android:id="@+id/textaApplication"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="4dp"
+        android:includeFontPadding="false"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:text="@string/application_info_drawer"/>
+    <TextView
+        android:id="@+id/textDeveloperName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="4dp"
+        android:includeFontPadding="false"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:text="@string/developer_name"/>
+</LinearLayout>

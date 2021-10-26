@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Simple Weather</string>
+    <string name="title_splash">به برنامه خوش آمدید</string>
+    <string name="title_real_feel">RealFeel®:</string>
+    <string name="detail">details</string>
+    <string name="hygrometer">humidity</string>
+    <string name="visibility">visibility: </string>
+    <string name="cloud_cover">cloud cover</string>
+    <string name="wind_speed">wind speed</string>
+    <string name="pressure">pressure</string>
+    <string name="sunrise">sunrise</string>
+    <string name="sunset">sunset</string>
+    <string name="developer_name">developer: mohammad karimi kalat</string>
+    <string name="application_info_drawer">weather forecast program</string>
+    <string name="hint_search_city">city search…</string>
+    <string name="daily_forecast">daily forecast</string>
+    <string name="current_location">current location</string>
+    <string name="delete_search_history">delete your search history</string>
+    <string name="message_warning_dialog">This will clear your entire search history!!</string>
+    <string name="cancel">no</string>
+    <string name="confirmation">yes</string>
+    <string name="about_us">about us</string>
+    <string name="exit">exit</string>
+    <string name="lang">en</string>
+    <string name="saturday">saturday</string>
+    <string name="sunday">sunday</string>
+    <string name="monday">monday</string>
+    <string name="tuesday">tuesday</string>
+    <string name="wednesday">wednesday</string>
+    <string name="thursday">thursday</string>
+    <string name="friday">friday</string>
+    <string name="change_language">change language</string>
+</resources>

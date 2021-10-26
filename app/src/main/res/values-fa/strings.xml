@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Simple Weather</string>
+    <string name="title_splash">به برنامه خوش آمدید</string>
+    <string name="title_real_feel">RealFeel®:</string>
+    <string name="detail">جزییات</string>
+    <string name="hygrometer">رطوبت</string>
+    <string name="visibility">visibility: </string>
+    <string name="cloud_cover">پوشش ابر</string>
+    <string name="wind_speed">سرعت باد</string>
+    <string name="pressure">فشار</string>
+    <string name="sunrise">طلوع خورشید</string>
+    <string name="sunset">غروب خورشید</string>
+    <string name="developer_name">توسعه دهنده: محمد کریمی کلات</string>
+    <string name="application_info_drawer">برنامه پیش بینی آب و هوا</string>
+    <string name="hint_search_city">جست و جو شهر…</string>
+    <string name="daily_forecast">پیش بینی روزانه</string>
+    <string name="current_location">مکان جاری</string>
+    <string name="delete_search_history">حذف تاریخچه جست و تو</string>
+    <string name="message_warning_dialog">با این کار تمامی تاریخچه جست و جو شما پاک می شود!!</string>
+    <string name="cancel">لغو</string>
+    <string name="confirmation">تایید</string>
+    <string name="about_us">درباره ما</string>
+    <string name="exit">خروج</string>
+    <string name="lang">fa</string>
+    <string name="saturday">شنبه</string>
+    <string name="sunday">یک شنبه</string>
+    <string name="monday">دو شنبه</string>
+    <string name="tuesday">سه شنبه</string>
+    <string name="wednesday">چهار شنبه</string>
+    <string name="thursday">پنج شنبه</string>
+    <string name="friday">جمعه</string>
+    <string name="change_language">تغییر زبان</string>
+</resources>

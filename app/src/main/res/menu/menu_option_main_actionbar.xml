@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/getLocationItem"
+        android:title="@string/current_location"/>
+    <item
+        android:id="@+id/allDeleteHistoryItem"
+        android:title="@string/delete_search_history"/>
+    <item
+        android:id="@+id/aboutUsItem"
+        android:title="@string/about_us"/>
+    <item
+        android:id="@+id/changeLanguage"
+        android:title="@string/change_language"/>
+    <item
+        android:id="@+id/finshItem"
+        android:title="@string/exit"/>
+</menu>
