@@ -22,12 +22,6 @@
     <string name="about_us">درباره ما</string>
     <string name="exit">خروج</string>
     <string name="lang">fa</string>
-    <string name="saturday">شنبه</string>
-    <string name="sunday">یک شنبه</string>
-    <string name="monday">دو شنبه</string>
-    <string name="tuesday">سه شنبه</string>
-    <string name="wednesday">چهار شنبه</string>
-    <string name="thursday">پنج شنبه</string>
-    <string name="friday">جمعه</string>
     <string name="change_language">تغییر زبان</string>
+    <string name="about_message_dialog">این برنامه در حال حاضر درباره پیش بینی آب و هواست و وضعیت جاری هوا منطقه را نیز بر می گرداند و سازنده این اپ نیز محمد کریمی کلات است</string>
 </resources>

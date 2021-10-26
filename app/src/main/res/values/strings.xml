@@ -22,12 +22,6 @@
     <string name="about_us">about us</string>
     <string name="exit">exit</string>
     <string name="lang">en</string>
-    <string name="saturday">saturday</string>
-    <string name="sunday">sunday</string>
-    <string name="monday">monday</string>
-    <string name="tuesday">tuesday</string>
-    <string name="wednesday">wednesday</string>
-    <string name="thursday">thursday</string>
-    <string name="friday">friday</string>
     <string name="change_language">change language</string>
+    <string name="about_message_dialog">This program is currently about the weather forecast and the current weather situation in the region and the creator of this app is Mohammad Karimi Kalat</string>
 </resources>

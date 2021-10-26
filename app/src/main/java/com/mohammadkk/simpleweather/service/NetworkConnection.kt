@@ -20,6 +20,6 @@ class NetworkConnection constructor(private val context: Context) {
         }
     }
     fun isAirplaneMode(): Boolean {
-        return Settings.System.getInt(context.contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) != 0
+        return Settings.Global.getInt(context.contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) != 0
     }
 }

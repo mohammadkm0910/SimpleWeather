@@ -5,11 +5,13 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.mohammadkk.simpleweather.helper.getLong
+import com.mohammadkk.simpleweather.helper.getString
 import com.mohammadkk.simpleweather.model.City
 
-class HistoryCity(private val context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class HistoryCity(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     override fun onCreate(db: SQLiteDatabase?) {
-        db?.execSQL("CREATE TABLE IF NOT EXISTS $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COLUMN_NAME TEXT);");
+        db?.execSQL("CREATE TABLE IF NOT EXISTS $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COLUMN_NAME TEXT);")
     }
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME;")
@@ -40,8 +42,8 @@ class HistoryCity(private val context: Context) : SQLiteOpenHelper(context, DATA
         cursor?.use {
             if (cursor.moveToFirst()) {
                 do {
-                    val mId = cursor.getLong(cursor.getColumnIndex(COLUMN_ID))
-                    val mName = cursor.getString(cursor.getColumnIndex(COLUMN_NAME))
+                    val mId = cursor.getLong(COLUMN_ID)
+                    val mName = cursor.getString(COLUMN_NAME) ?: ""
                     city.add(City(mId, mName))
                 } while (cursor.moveToNext())
             }
@@ -54,14 +56,14 @@ class HistoryCity(private val context: Context) : SQLiteOpenHelper(context, DATA
         cursor?.use {
             if (cursor.moveToFirst()) {
                 do {
-                    val mName = cursor.getString(cursor.getColumnIndex(COLUMN_NAME))
+                    val mName = cursor.getString(COLUMN_NAME) ?:""
                     city.add(mName)
                 } while (cursor.moveToNext())
             }
         }
         return city.toTypedArray()
     }
-    fun destoryHistory(onDestroy: (isCan:Boolean)->Unit) {
+    fun destroyHistory(onDestroy: (isCan:Boolean)->Unit) {
         val db = writableDatabase
         try {
             db?.use {
