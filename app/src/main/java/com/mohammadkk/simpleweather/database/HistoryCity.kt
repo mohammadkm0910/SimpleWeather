@@ -8,10 +8,12 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.mohammadkk.simpleweather.helper.getLong
 import com.mohammadkk.simpleweather.helper.getString
 import com.mohammadkk.simpleweather.model.City
+import java.util.*
+import kotlin.collections.ArrayList
 
 class HistoryCity(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     override fun onCreate(db: SQLiteDatabase?) {
-        db?.execSQL("CREATE TABLE IF NOT EXISTS $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COLUMN_NAME TEXT);")
+        db?.execSQL("CREATE TABLE IF NOT EXISTS $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COLUMN_NAME TEXT, $COLUMN_DATE TEXT);")
     }
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME;")
@@ -24,6 +26,7 @@ class HistoryCity(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
         if (query?.count == 0) {
             try {
                 values.put(COLUMN_NAME, name)
+                values.put(COLUMN_DATE, Date().time.toString())
                 db.use {
                     val insert: Long = db.insert(TABLE_NAME, null, values)
                     if (insert != -1L) {
@@ -44,7 +47,8 @@ class HistoryCity(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
                 do {
                     val mId = cursor.getLong(COLUMN_ID)
                     val mName = cursor.getString(COLUMN_NAME) ?: ""
-                    city.add(City(mId, mName))
+                    val mDate = cursor.getLong(COLUMN_DATE)
+                    city.add(City(mId, mName, mDate))
                 } while (cursor.moveToNext())
             }
         }
@@ -63,6 +67,8 @@ class HistoryCity(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
         }
         return city.toTypedArray()
     }
+    fun getLastDate() = getAllData()[getAllData().size-1]
+    fun getLastCity() = getAllCity()[getAllCity().size-1]
     fun destroyHistory(onDestroy: (isCan:Boolean)->Unit) {
         val db = writableDatabase
         try {
@@ -82,10 +88,11 @@ class HistoryCity(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
     }
     companion object {
         private const val DATABASE_NAME = "history_city"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 2
         private const val TABLE_NAME = "cities"
         private const val COLUMN_ID = "ID"
         private const val COLUMN_NAME = "NAME"
+        private const val COLUMN_DATE = "DATE"
     }
 
 }

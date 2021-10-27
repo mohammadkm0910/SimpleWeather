@@ -6,9 +6,7 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.drawable.AnimationDrawable
 import android.location.*
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.provider.Settings
 import android.util.TypedValue
 import android.view.*
@@ -16,7 +14,6 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -47,16 +44,23 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
 import kotlin.collections.ArrayList
+import android.content.Intent
+import android.content.ContextWrapper
+
+import android.os.LocaleList
+
+import android.os.Build
+import android.util.Log
+
 
 class MainActivity : AppCompatActivity() {
-    private var isRequirePermission = false
     private lateinit var binding: ActivityMainBinding
     private lateinit var include: GridWeatherBinding
     private lateinit var df: DecimalFormat
     private lateinit var networkConnection: NetworkConnection
-    private lateinit var cacheApp: CacheApp
     private var forecastItems: ArrayList<Forecast> = ArrayList()
     private var cityList = arrayListOf<City>()
+    private lateinit var listSearchAdapter: ArrayAdapter<String>
     private lateinit var historyAdapter: HistoryAdapter
     private lateinit var historyCity: HistoryCity
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -72,7 +76,6 @@ class MainActivity : AppCompatActivity() {
         df = DecimalFormat("#.##", decimalSymbols)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         networkConnection = NetworkConnection(this)
-        cacheApp = CacheApp(this)
         historyCity = HistoryCity(this)
         initHistoryAdapter()
         initDrawer()
@@ -81,7 +84,7 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onResume() {
         super.onResume()
-        findWeather(cacheApp.getLocation(), true)
+        findWeather(getLocation(), true)
     }
     private fun initDrawer() {
         val toggle = ActionBarDrawerToggle(this, binding.mainDrawer, binding.mainActionbar, 0, 0)
@@ -91,11 +94,11 @@ class MainActivity : AppCompatActivity() {
         animationDrawable.start()
     }
     private fun initSearch() {
-        binding.edtCity.setOnEditorActionListener { v, actionId, _ ->
+        binding.edtCity.setOnEditorActionListener { v, actionId, event ->
             val query = v.text.toString().trim()
             if (query.isEmpty()) {
-                Toasty(this).show("متن وارد شده خالی است!")
-            } else if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                Toasty(this).show("متنی وارد نشده است!")
+            } else if (actionId == EditorInfo.IME_ACTION_SEARCH || event.keyCode == KeyEvent.KEYCODE_ENTER) {
                 findWeather(query)
                 val imm = v.context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(v.windowToken, 0)
@@ -103,50 +106,56 @@ class MainActivity : AppCompatActivity() {
             }
             false
         }
-        binding.edtCity.setOnKeyListener { v, keyCode, _ ->
-            val query = binding.edtCity.text.toString().trim()
-            if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                if (query.isEmpty()) {
-                    Toasty(this).show("متن وارد شده خالی است!")
-                } else {
-                    findWeather(query)
-                    val imm = v.context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.hideSoftInputFromWindow(v.windowToken, 0)
-                    binding.mainDrawer.closeDrawer(GravityCompat.START)
-                }
-            }
-            false
-        }
     }
     private fun initLanguage() {
-        val index = if (getString(R.string.lang) == "en") 0 else 1
+        val index = PreferenceUtils.getInt(this, PreferenceUtils.KEY_CHANGE_LANG, 0)
         AlertDialog.Builder(this)
             .setTitle("انتخاب زبان")
-            .setSingleChoiceItems(arrayOf("انگلیسی", "فارسی"), index) { dialog, which ->
-                if (which == 0) {
-                    setLocale("en")
-                    recreate()
-                } else if (which == 1) {
-                    setLocale("fa")
-                    recreate()
-                }
+            .setSingleChoiceItems(arrayOf("پیش فرض", "انگلیسی", "فارسی"), index) { dialog, which ->
+                PreferenceUtils.putInt(this, PreferenceUtils.KEY_CHANGE_LANG, which)
+                val intent = intent
+                startActivity(intent)
+                overridePendingTransition(0, 0)
+                finish()
                 dialog.dismiss()
             }
             .create()
             .show()
     }
-    private fun setLocale(lang: String) {
-        val locale = Locale(lang)
-        val config = baseContext.resources.configuration
-        val displayMetrics = baseContext.resources.displayMetrics
-        Locale.setDefault(locale)
-        config.setLocale(locale)
-        baseContext.resources.updateConfiguration(config, displayMetrics)
+    override fun attachBaseContext(newBase: Context?) {
+        if (newBase != null) {
+            val locale = when (PreferenceUtils.getInt(newBase, PreferenceUtils.KEY_CHANGE_LANG, 0)) {
+                0 -> Locale.getDefault()
+                1 -> Locale("en")
+                2 -> Locale("fa")
+                else -> Locale.getDefault()
+            }
+            val context = wrap(newBase, locale)
+            super.attachBaseContext(context)
+        } else super.attachBaseContext(newBase)
+    }
+    private fun wrap(context: Context, newLocale: Locale): ContextWrapper {
+        var ctx = context
+        val res = ctx.resources
+        val configuration = res.configuration
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            configuration.setLocale(newLocale)
+            val localeList = LocaleList(newLocale)
+            LocaleList.setDefault(localeList)
+            configuration.setLocales(localeList)
+            ctx = ctx.createConfigurationContext(configuration)
+        } else {
+            @Suppress("DEPRECATION")
+            configuration.locale = newLocale
+            @Suppress("DEPRECATION")
+            res.updateConfiguration(configuration, res.displayMetrics)
+        }
+        return ContextWrapper(ctx)
     }
     private fun initRefreshApp() {
         binding.refreshApp.setOnRefreshListener {
             Handler(Looper.getMainLooper()).postDelayed({
-                findWeather(cacheApp.getLocation())
+                findWeather(getLocation())
                 if (getEdtCity().isNotEmpty()) {
                     binding.edtCity.setText("")
                 }
@@ -156,14 +165,16 @@ class MainActivity : AppCompatActivity() {
     }
     private fun initHistoryAdapter() {
         cityList = historyCity.getAllData()
-        cityList.reverse()
-        historyAdapter = HistoryAdapter(this, cityList) {name ->
+        historyAdapter = HistoryAdapter(this) {name ->
             findWeather(name)
             binding.mainDrawer.closeDrawer(GravityCompat.START)
         }
+
+        historyAdapter.clear()
+        historyAdapter.allAll(cityList)
+        listSearchAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, historyCity.getAllCity())
         binding.historySearchList.layoutManager = LinearLayoutManager(this@MainActivity)
         binding.historySearchList.adapter = historyAdapter
-        val listSearchAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, historyCity.getAllCity())
         binding.edtCity.setAdapter(listSearchAdapter)
     }
     override fun onBackPressed() {
@@ -200,7 +211,8 @@ class MainActivity : AppCompatActivity() {
                 WarningDialog {
                     historyCity.destroyHistory { isCan ->
                         if (isCan) {
-                            initHistoryAdapter()
+                            historyAdapter.clear()
+                            listSearchAdapter.clear()
                         }
                     }
                 }.show(supportFragmentManager, "WarningDialog")
@@ -337,13 +349,14 @@ class MainActivity : AppCompatActivity() {
                 override fun onSuccess(statusCode: Int, headers: Array<out Header>?, response: JSONObject?) {
                     super.onSuccess(statusCode, headers, response)
                     try {
-                        if (cacheApp.getLocation() != location) {
-                            cacheApp.saveLocation(location)
+                        if (getLocation() != location) {
+                            PreferenceUtils.putString(this@MainActivity, PreferenceUtils.KEY_LOCATION, location)
                         }
                         if (getEdtCity().isNotEmpty()) {
                             historyCity.insertData(location) {isCan ->
                                 if (isCan) {
-                                    initHistoryAdapter()
+                                    historyAdapter.add(historyCity.getLastDate())
+                                    listSearchAdapter.add(historyCity.getLastCity())
                                 }
                             }
                         }
@@ -440,4 +453,5 @@ class MainActivity : AppCompatActivity() {
         return forecast
     }
     private fun getEdtCity(): String = binding.edtCity.text.toString().trim()
+    private fun getLocation() = PreferenceUtils.getString(this, PreferenceUtils.KEY_LOCATION, "تهران")
 }

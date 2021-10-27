@@ -1,3 +1,3 @@
 package com.mohammadkk.simpleweather.model
 
-data class City(internal val id: Long, internal val name: String)
+data class City(internal val id: Long, internal val name: String, internal val date: Long)
