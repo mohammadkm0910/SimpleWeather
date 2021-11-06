@@ -50,7 +50,6 @@ import android.content.ContextWrapper
 import android.os.LocaleList
 
 import android.os.Build
-import android.util.Log
 
 
 class MainActivity : AppCompatActivity() {
@@ -84,7 +83,7 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onResume() {
         super.onResume()
-        findWeather(getLocation(), true)
+        findWeather(baseConfig.lastLocation, true)
     }
     private fun initDrawer() {
         val toggle = ActionBarDrawerToggle(this, binding.mainDrawer, binding.mainActionbar, 0, 0)
@@ -108,11 +107,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun initLanguage() {
-        val index = PreferenceUtils.getInt(this, PreferenceUtils.KEY_CHANGE_LANG, 0)
+        val index = baseConfig.appLanguage
         AlertDialog.Builder(this)
             .setTitle("انتخاب زبان")
             .setSingleChoiceItems(arrayOf("پیش فرض", "انگلیسی", "فارسی"), index) { dialog, which ->
-                PreferenceUtils.putInt(this, PreferenceUtils.KEY_CHANGE_LANG, which)
+                baseConfig.appLanguage = which
                 val intent = intent
                 startActivity(intent)
                 overridePendingTransition(0, 0)
@@ -124,7 +123,7 @@ class MainActivity : AppCompatActivity() {
     }
     override fun attachBaseContext(newBase: Context?) {
         if (newBase != null) {
-            val locale = when (PreferenceUtils.getInt(newBase, PreferenceUtils.KEY_CHANGE_LANG, 0)) {
+            val locale = when (newBase.baseConfig.appLanguage) {
                 0 -> Locale.getDefault()
                 1 -> Locale("en")
                 2 -> Locale("fa")
@@ -155,7 +154,7 @@ class MainActivity : AppCompatActivity() {
     private fun initRefreshApp() {
         binding.refreshApp.setOnRefreshListener {
             Handler(Looper.getMainLooper()).postDelayed({
-                findWeather(getLocation())
+                findWeather(baseConfig.lastLocation)
                 if (getEdtCity().isNotEmpty()) {
                     binding.edtCity.setText("")
                 }
@@ -204,7 +203,7 @@ class MainActivity : AppCompatActivity() {
                 if (locationPermissionOne && locationPermissionTwo) {
                     getCurrentLocation()
                 } else {
-                    ActivityCompat.requestPermissions(this, arrayOf(permission.ACCESS_FINE_LOCATION, permission.ACCESS_COARSE_LOCATION), REQUEST_LOCATION_PERMISSION)
+                   ActivityCompat.requestPermissions(this, arrayOf(permission.ACCESS_FINE_LOCATION, permission.ACCESS_COARSE_LOCATION), REQUEST_LOCATION_PERMISSION)
                 }
             }
             R.id.allDeleteHistoryItem -> {
@@ -349,8 +348,8 @@ class MainActivity : AppCompatActivity() {
                 override fun onSuccess(statusCode: Int, headers: Array<out Header>?, response: JSONObject?) {
                     super.onSuccess(statusCode, headers, response)
                     try {
-                        if (getLocation() != location) {
-                            PreferenceUtils.putString(this@MainActivity, PreferenceUtils.KEY_LOCATION, location)
+                        if (baseConfig.lastLocation != location) {
+                            baseConfig.lastLocation = location
                         }
                         if (getEdtCity().isNotEmpty()) {
                             historyCity.insertData(location) {isCan ->
@@ -453,5 +452,4 @@ class MainActivity : AppCompatActivity() {
         return forecast
     }
     private fun getEdtCity(): String = binding.edtCity.text.toString().trim()
-    private fun getLocation() = PreferenceUtils.getString(this, PreferenceUtils.KEY_LOCATION, "تهران")
 }

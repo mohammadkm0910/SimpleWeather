@@ -1,6 +1,7 @@
 package com.mohammadkk.simpleweather.helper
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.database.Cursor
 import android.os.Build
 import android.text.Html
@@ -30,6 +31,13 @@ fun Context.dipDimension(size: Float): Int {
     val dm = resources.displayMetrics
     return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, dm).toInt()
 }
+
+
+@Suppress("HasPlatformType")
+fun Context.getSharedPrefs() = getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE)
+
+val Context.baseConfig: BaseConfig get() = BaseConfig.newInstance(this)
+
 fun Cursor.getString(columnName: String): String? = getString(getColumnIndexOrThrow(columnName))
 fun Cursor.getLong(columnName: String) = getLong(getColumnIndexOrThrow(columnName))
 fun createHtml(source: String): Spanned? {
