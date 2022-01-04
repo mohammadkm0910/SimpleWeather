@@ -15,23 +15,27 @@
         android:layout_height="match_parent"
         android:background="@drawable/bg_main"
         android:orientation="vertical">
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/mainActionbar"
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="?attr/actionBarSize"
-            android:background="@color/deep_purple_a100"
             android:theme="@style/ThemeOverlay.MaterialComponents.Dark"
-            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light">
-            <ProgressBar
-                android:id="@+id/progressFinshed"
-                android:layout_width="wrap_content"
+            android:background="?android:colorPrimary">
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/mainActionbar"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:indeterminate="true"
-                android:visibility="gone"
-                android:theme="@style/Theme.SimpleWeather.ProgressBarTint"/>
-        </androidx.appcompat.widget.Toolbar>
+                android:minHeight="?attr/actionBarSize"
+                app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light">
+                <ProgressBar
+                    android:id="@+id/progressFinshed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:indeterminate="true"
+                    android:visibility="gone"
+                    android:theme="@style/Theme.SimpleWeather.ProgressBarTint"/>
+            </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.AppBarLayout>
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshApp"
             android:layout_width="match_parent"
@@ -198,12 +202,14 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:fitsSystemWindows="false"
+        app:headerLayout="@layout/nav_header_drawer"
         android:background="@drawable/bg_nav_drawer">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-            <include layout="@layout/nav_header_drawer"/>
+            android:orientation="vertical"
+            android:layout_marginTop="160dp">
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="40dp"

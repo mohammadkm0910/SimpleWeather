@@ -2,6 +2,7 @@ package com.mohammadkk.simpleweather.helper
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.os.Build
 import android.text.Html
@@ -31,7 +32,11 @@ fun Context.dipDimension(size: Float): Int {
     val dm = resources.displayMetrics
     return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, dm).toInt()
 }
-
+fun Context.hasPermission(permission: String): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
+    } else true
+}
 
 @Suppress("HasPlatformType")
 fun Context.getSharedPrefs() = getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE)

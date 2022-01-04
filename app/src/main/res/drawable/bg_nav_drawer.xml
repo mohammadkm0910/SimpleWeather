@@ -5,14 +5,14 @@
             <gradient
                 android:angle="225"
                 android:endColor="@color/pink_400"
-                android:startColor="@color/pink_200"/>
+                android:startColor="@color/pink_a100"/>
         </shape>
     </item>
     <item android:duration="1000">
         <shape android:shape="rectangle">
             <gradient
                 android:angle="225"
-                android:endColor="@color/purple_400"
+                android:endColor="@color/indigo_400"
                 android:startColor="@color/purple_200" />
         </shape>
     </item>
@@ -20,7 +20,7 @@
         <shape android:shape="rectangle">
             <gradient
                 android:angle="225"
-                android:endColor="@color/deep_purple_400"
+                android:endColor="@color/deep_purple_a200"
                 android:startColor="@color/deep_purple_200" />
         </shape>
     </item>

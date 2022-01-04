@@ -96,7 +96,8 @@ class MainActivity : AppCompatActivity() {
         binding.edtCity.setOnEditorActionListener { v, actionId, event ->
             val query = v.text.toString().trim()
             if (query.isEmpty()) {
-                Toasty(this).show("متنی وارد نشده است!")
+                Toasty.show(this, "متنی وارد نشده است!")
+                if (v.text.toString().isNotEmpty()) binding.edtCity.setText("")
             } else if (actionId == EditorInfo.IME_ACTION_SEARCH || event.keyCode == KeyEvent.KEYCODE_ENTER) {
                 findWeather(query)
                 val imm = v.context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -198,9 +199,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.getLocationItem -> {
-                val locationPermissionOne = ContextCompat.checkSelfPermission(this, permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                val locationPermissionTwo = ContextCompat.checkSelfPermission(this, permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                if (locationPermissionOne && locationPermissionTwo) {
+                if (hasPermission(permission.ACCESS_FINE_LOCATION) && hasPermission(permission.ACCESS_COARSE_LOCATION)) {
                     getCurrentLocation()
                 } else {
                    ActivityCompat.requestPermissions(this, arrayOf(permission.ACCESS_FINE_LOCATION, permission.ACCESS_COARSE_LOCATION), REQUEST_LOCATION_PERMISSION)
@@ -211,6 +210,8 @@ class MainActivity : AppCompatActivity() {
                     historyCity.destroyHistory { isCan ->
                         if (isCan) {
                             historyAdapter.clear()
+                            binding.edtCity.setText("")
+                            listSearchAdapter.notifyDataSetChanged()
                             listSearchAdapter.clear()
                         }
                     }
@@ -254,7 +255,7 @@ class MainActivity : AppCompatActivity() {
                     if (location != null) {
                         val lat = location.latitude
                         val lon = location.longitude
-                        latAndLonConvertCityName(lat.toString(), lon.toString())
+                        latAndLonConvertCityName(lat, lon)
                     } else {
                         val locationRequest = LocationRequest.create().apply {
                             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
@@ -267,7 +268,7 @@ class MainActivity : AppCompatActivity() {
                                 val loc = p0.lastLocation
                                 val lat = loc.latitude
                                 val lon = loc.longitude
-                                latAndLonConvertCityName(lat.toString(), lon.toString())
+                                latAndLonConvertCityName(lat, lon)
                             }
                         }
                         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
@@ -317,7 +318,7 @@ class MainActivity : AppCompatActivity() {
             return true
         }
     }
-    private fun latAndLonConvertCityName(lat: String, lon: String) {
+    private fun latAndLonConvertCityName(lat: Double, lon: Double) {
         val url = "http://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&lang=fa&units=metric&appid=a17639e2d998a74bd1dc8aa859c64f95"
         val client = AsyncHttpClient()
         if (isNetworkInfo()) {
@@ -355,6 +356,7 @@ class MainActivity : AppCompatActivity() {
                             historyCity.insertData(location) {isCan ->
                                 if (isCan) {
                                     historyAdapter.add(historyCity.getLastDate())
+                                    listSearchAdapter.notifyDataSetChanged()
                                     listSearchAdapter.add(historyCity.getLastCity())
                                 }
                             }
@@ -437,7 +439,8 @@ class MainActivity : AppCompatActivity() {
     }
     private fun getForecast(daily: JSONArray, timezone: String): ArrayList<Forecast> {
         val forecast = ArrayList<Forecast>()
-        for (i in 0 until 8) {
+        var i = 0
+        do {
             val day = daily.getJSONObject(i)
             val weather = day.getJSONArray("weather").getJSONObject(0)
             val temp = day.getJSONObject("temp")
@@ -448,7 +451,8 @@ class MainActivity : AppCompatActivity() {
             val dayName = day.getLong("dt").getDay(timezone, this)
             val item = Forecast(dayName,description, tempMin, tempMax, icon)
             forecast.add(item)
-        }
+            i++
+        } while (i < 8)
         return forecast
     }
     private fun getEdtCity(): String = binding.edtCity.text.toString().trim()

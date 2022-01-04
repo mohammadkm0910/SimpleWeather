@@ -47,13 +47,20 @@ class HistoryAdapter(private val context: Context, private val onclick:(name:Str
     override fun getItemCount(): Int {
         return items.size()
     }
+    private fun refresh() {
+        for (i in 0 until items.size()) {
+            notifyItemChanged(i)
+        }
+    }
     fun add(city: City) {
         items.add(city)
+        refresh()
     }
     fun allAll(cities: List<City>) {
         items.addAll(cities)
     }
     fun clear() {
         while (items.size() > 0) items.removeItemAt(items.size() -1)
+        refresh()
     }
 }
