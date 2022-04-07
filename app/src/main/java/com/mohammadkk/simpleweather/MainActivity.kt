@@ -2,14 +2,19 @@ package com.mohammadkk.simpleweather
 
 import android.Manifest.permission
 import android.annotation.SuppressLint
-import android.content.*
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.AnimationDrawable
-import android.location.*
+import android.location.LocationManager
 import android.os.*
 import android.provider.Settings
 import android.util.TypedValue
-import android.view.*
+import android.view.KeyEvent
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
@@ -22,7 +27,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.*
-import com.google.android.gms.location.LocationRequest
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.loopj.android.http.AsyncHttpClient
@@ -36,6 +40,7 @@ import com.mohammadkk.simpleweather.dialog.WarningDialog
 import com.mohammadkk.simpleweather.helper.*
 import com.mohammadkk.simpleweather.model.City
 import com.mohammadkk.simpleweather.model.Forecast
+import com.mohammadkk.simpleweather.service.BuildApi
 import com.mohammadkk.simpleweather.service.NetworkConnection
 import cz.msebera.android.httpclient.Header
 import org.json.JSONArray
@@ -43,13 +48,6 @@ import org.json.JSONObject
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
-import kotlin.collections.ArrayList
-import android.content.Intent
-import android.content.ContextWrapper
-
-import android.os.LocaleList
-
-import android.os.Build
 
 
 class MainActivity : AppCompatActivity() {
@@ -94,17 +92,17 @@ class MainActivity : AppCompatActivity() {
     }
     private fun initSearch() {
         binding.edtCity.setOnEditorActionListener { v, actionId, event ->
-            val query = v.text.toString().trim()
-            if (query.isEmpty()) {
-                Toasty.show(this, "متنی وارد نشده است!")
-                if (v.text.toString().isNotEmpty()) binding.edtCity.setText("")
+            val query = v.text.toString()
+            if (query.trim().isEmpty()) {
+                if (query.isNotEmpty()) binding.edtCity.setText("")
+                createCustomToast("متنی وارد نشده است!")
             } else if (actionId == EditorInfo.IME_ACTION_SEARCH || event.keyCode == KeyEvent.KEYCODE_ENTER) {
-                findWeather(query)
+                findWeather(query.trim())
                 val imm = v.context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(v.windowToken, 0)
                 binding.mainDrawer.closeDrawer(GravityCompat.START)
             }
-            false
+            true
         }
     }
     private fun initLanguage() {
@@ -225,14 +223,13 @@ class MainActivity : AppCompatActivity() {
                     )
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
                     setTextColor(getColorRes(R.color.grey_800))
-                    text = getString(R.string.about_message_dialog)
+                    setText(R.string.about_message_dialog)
                 }
-
                 message.requestLayout()
                 MaterialAlertDialogBuilder(this)
-                    .setTitle(getString(R.string.about_us))
+                    .setTitle(R.string.about_us)
                     .setView(message)
-                    .setPositiveButton(getString(R.string.confirmation)) { d, _ -> d.dismiss() }
+                    .setPositiveButton(R.string.confirmation) { d, _ -> d.dismiss() }
                     .create()
                     .show()
             }
@@ -248,14 +245,13 @@ class MainActivity : AppCompatActivity() {
         val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-        if (isGpsEnabled || isNetworkEnabled) {
+        if (isGpsEnabled && isNetworkEnabled) {
             fusedLocationProviderClient.lastLocation.addOnCompleteListener {
                 try {
                     val location = it.result
                     if (location != null) {
-                        val lat = location.latitude
-                        val lon = location.longitude
-                        latAndLonConvertCityName(lat, lon)
+                        val gps = listOf(location.latitude, location.longitude)
+                        latAndLonConvertCityName(gps[0], gps[1])
                     } else {
                         val locationRequest = LocationRequest.create().apply {
                             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
@@ -319,10 +315,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun latAndLonConvertCityName(lat: Double, lon: Double) {
-        val url = "http://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&lang=fa&units=metric&appid=a17639e2d998a74bd1dc8aa859c64f95"
         val client = AsyncHttpClient()
         if (isNetworkInfo()) {
-            client.get(url, object : JsonHttpResponseHandler() {
+            client.get(BuildApi.getMainGPSAddress(lat, lon), object : JsonHttpResponseHandler() {
                 override fun onSuccess(statusCode: Int, headers: Array<out Header>?, response: JSONObject?) {
                     super.onSuccess(statusCode, headers, response)
                     try {
@@ -341,11 +336,10 @@ class MainActivity : AppCompatActivity() {
 
     }
     private fun findWeather(location: String, isResume: Boolean = false) {
-        val url = "http://api.openweathermap.org/data/2.5/weather?lang=fa&units=metric&q=$location&APPID=a17639e2d998a74bd1dc8aa859c64f95"
         val client = AsyncHttpClient()
         if (isNetworkInfo()) {
             if (!isResume) binding.progressFinshed.visibility = View.VISIBLE
-            client.get(url, object : JsonHttpResponseHandler() {
+            client.get(BuildApi.getMainWeather(location), object : JsonHttpResponseHandler() {
                 override fun onSuccess(statusCode: Int, headers: Array<out Header>?, response: JSONObject?) {
                     super.onSuccess(statusCode, headers, response)
                     try {
@@ -382,7 +376,7 @@ class MainActivity : AppCompatActivity() {
                         val cloud = df.format(root.getJSONObject("clouds").getInt("all"))
                         val sunrise = sys.getLong("sunrise")
                         val sunset = sys.getLong("sunset")
-                        findForecast(lon, lat, sunrise, sunset)
+                        findForecast(lat, lon, sunrise, sunset)
                         val pressure = df.format(main.getInt("pressure"))
                         val humidity = df.format(main.getInt("humidity"))
                         val windSpeed = df.format((root.getJSONObject("wind").getDouble("speed") * 3.6))
@@ -409,10 +403,9 @@ class MainActivity : AppCompatActivity() {
             })
         }
     }
-    private fun findForecast(lon: String, lat: String, sunrise: Long, sunset: Long) {
-        val url = "http://api.openweathermap.org/data/2.5/onecall?lat=$lat&lon=$lon&lang=${getString(R.string.lang)}&units=metric&exclude=current&appid=a17639e2d998a74bd1dc8aa859c64f95"
+    private fun findForecast(lat: String, lon: String, sunrise: Long, sunset: Long) {
         val client = AsyncHttpClient()
-        client.get(url, object : JsonHttpResponseHandler() {
+        client.get(BuildApi.getMainForecast(lat, lon, getString(R.string.lang)), object : JsonHttpResponseHandler() {
             override fun onSuccess(statusCode: Int, headers: Array<out Header>?, response: JSONObject?) {
                 super.onSuccess(statusCode, headers, response)
                 val root = JSONObject(response.toString())

@@ -9,9 +9,11 @@
         <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/drawable/bg_nav_header_drawer.xml" value="0.3609375" />
         <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/drawable/bg_warning.xml" value="0.3609375" />
         <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/layout/grid_weather.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/layout/history_item.xml" value="0.3625" />
         <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/layout/nav_header_drawer.xml" value="0.33" />
-        <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/layout/toast_layout.xml" value="0.3625" />
+        <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/layout/toast.xml" value="0.1" />
+        <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/layout/toast_layout.xml" value="0.1" />
         <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/layout/toasty_layout.xml" value="0.1" />
       </map>
     </option>
