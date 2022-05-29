@@ -36,9 +36,10 @@ fun Context.dipDimension(size: Float): Int {
     return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, dm).toInt()
 }
 fun Context.hasPermission(permission: String): Boolean {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
-    } else true
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        return checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
+    }
+    return true
 }
 fun Activity.createCustomToast(message: String) {
     val context = this
@@ -61,6 +62,7 @@ val Context.baseConfig: BaseConfig get() = BaseConfig.newInstance(this)
 
 fun Cursor.getString(columnName: String): String? = getString(getColumnIndexOrThrow(columnName))
 fun Cursor.getLong(columnName: String) = getLong(getColumnIndexOrThrow(columnName))
+
 fun createHtml(source: String): Spanned? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         Html.fromHtml(source, Html.FROM_HTML_MODE_LEGACY)

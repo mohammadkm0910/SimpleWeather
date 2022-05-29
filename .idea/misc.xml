@@ -8,7 +8,13 @@
         <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/drawable/bg_native_btn_dialog.xml" value="0.12685185185185185" />
         <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/drawable/bg_nav_header_drawer.xml" value="0.3609375" />
         <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/drawable/bg_warning.xml" value="0.3609375" />
+        <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/drawable/ic_eye.xml" value="0.238" />
+        <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/drawable/ic_logo.xml" value="0.238" />
+        <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/drawable/ic_warning.xml" value="0.238" />
+        <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/drawable/ic_wind.xml" value="0.238" />
         <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/layout/activity_splash.xml" value="0.1762917933130699" />
+        <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/layout/forecast_item.xml" value="0.3625" />
         <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/layout/grid_weather.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/layout/history_item.xml" value="0.3625" />
         <entry key="..\:/Users/mohammad/AndroidStudioProjects/SimpleWeather/app/src/main/res/layout/nav_header_drawer.xml" value="0.33" />

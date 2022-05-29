@@ -9,7 +9,6 @@ import com.mohammadkk.simpleweather.helper.getLong
 import com.mohammadkk.simpleweather.helper.getString
 import com.mohammadkk.simpleweather.model.City
 import java.util.*
-import kotlin.collections.ArrayList
 
 class HistoryCity(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     override fun onCreate(db: SQLiteDatabase?) {
@@ -19,7 +18,8 @@ class HistoryCity(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME;")
         onCreate(db)
     }
-    fun insertData(name: String, onInsert: (isCan:Boolean)->Unit) {
+    fun insertData(name: String): Boolean {
+        var result = false
         val db = writableDatabase
         val values = ContentValues()
         val query = db?.rawQuery("SELECT * FROM $TABLE_NAME WHERE $COLUMN_NAME=?", arrayOf(name))
@@ -29,15 +29,12 @@ class HistoryCity(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
                 values.put(COLUMN_DATE, Date().time.toString())
                 db.use {
                     val insert: Long = db.insert(TABLE_NAME, null, values)
-                    if (insert != -1L) {
-                        onInsert(true)
-                    } else {
-                        onInsert(false)
-                    }
+                    result = insert != -1L
                 }
             } catch (e: Exception) {}
         }
         query?.close()
+        return result
     }
     fun getAllData(): ArrayList<City> {
         val city = arrayListOf<City>()
@@ -69,14 +66,16 @@ class HistoryCity(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
     }
     fun getLastDate() = getAllData()[getAllData().size-1]
     fun getLastCity() = getAllCity()[getAllCity().size-1]
-    fun destroyHistory(onDestroy: (isCan:Boolean)->Unit) {
+    fun destroyHistory(): Boolean {
+        var isDestroyable = false
         val db = writableDatabase
         try {
             db?.use {
                 val destroy = db.delete(TABLE_NAME, null, null)
-                onDestroy(destroy != -1)
+                isDestroyable = destroy != -1
             }
         } catch (e: Exception) {}
+        return isDestroyable
     }
     private fun readData(): Cursor? {
         val db = writableDatabase

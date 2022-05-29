@@ -11,10 +11,14 @@
         <item name="colorOnSecondary">@color/black</item>
         <item name="android:fontFamily">@font/vazir</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
     <style name="Theme.SimpleWeather.ProgressBarTint">
         <item name="colorSecondary">@color/blue_a200</item>
+    </style>
+    <style name="Theme.SimpleWeather.Splash">
+        <item name="android:windowBackground">@drawable/bg_splash</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@android:color/transparent</item>
     </style>
 </resources>

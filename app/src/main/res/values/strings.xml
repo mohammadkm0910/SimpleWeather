@@ -23,5 +23,9 @@
     <string name="exit">exit</string>
     <string name="lang">en</string>
     <string name="change_language">change language</string>
+    <string name="select_language">Select the language</string>
     <string name="about_message_dialog">This program is currently about the weather forecast and the current weather situation in the region and the creator of this app is Mohammad Karimi Kalat</string>
+    <string name="lang_persian">Persian language</string>
+    <string name="lang_english">English language</string>
+    <string name="default_system">Default system</string>
 </resources>
